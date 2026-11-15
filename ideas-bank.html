@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מאגר רעיונות">
+<meta name="theme-color" content="#14161f">
+<title>מאגר רעיונות</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💡</text></svg>">
+<style>
+  :root{
+    --bg:#14161f; --card:#1e2130; --card2:#262a3d; --line:#33384f;
+    --text:#eef0f7; --muted:#9aa0b8; --accent:#ffc94a; --accent2:#6ea8ff;
+    --green:#4fd08a; --red:#ff6b6b; --purple:#b38bff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Rubik,Arial,sans-serif;padding-bottom:110px}
+  header{position:sticky;top:0;z-index:5;background:rgba(20,22,31,.95);backdrop-filter:blur(8px);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:22px;display:flex;align-items:center;gap:8px}
+  .stats{display:flex;gap:8px;margin-top:10px}
+  .stat{flex:1;background:var(--card);border-radius:12px;padding:8px;text-align:center}
+  .stat b{display:block;font-size:20px}
+  .stat span{font-size:12px;color:var(--muted)}
+  .tabs{display:flex;gap:6px;margin-top:10px;overflow-x:auto}
+  .tab{flex:none;padding:7px 14px;border-radius:20px;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:14px;cursor:pointer}
+  .tab.on{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:700}
+  .tools{display:flex;gap:8px;margin-top:10px}
+  .tools input,.tools select{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 10px;font-size:15px}
+  main{padding:12px 16px}
+  .idea{background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;border-right:5px solid var(--muted);cursor:pointer}
+  .idea.p3{border-right-color:var(--red)} .idea.p2{border-right-color:var(--accent)} .idea.p1{border-right-color:var(--accent2)}
+  .idea h3{margin:0 0 6px;font-size:17px}
+  .idea p{margin:0 0 8px;color:var(--muted);font-size:14px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:12px;background:var(--card2);color:var(--text)}
+  .chip.st-work{background:#1f3b5c;color:#9cc7ff} .chip.st-done{background:#1d4232;color:#8fe8b6} .chip.st-idea{background:#4a3d16;color:#ffd97a}
+  .empty{text-align:center;color:var(--muted);padding:50px 20px;line-height:1.7}
+  .empty .big{font-size:50px}
+  .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:6}
+  .btn{border:0;border-radius:14px;padding:13px 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn.main{background:var(--accent);color:#1a1a1a;box-shadow:0 6px 20px rgba(255,201,74,.35)}
+  .btn.alt{background:var(--purple);color:#14161f}
+  .btn.ghost{background:var(--card2);color:var(--text)}
+  .btn.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:10;align-items:flex-end;justify-content:center}
+  .overlay.show{display:flex}
+  .sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:22px 22px 0 0;padding:18px 16px 26px;border-top:1px solid var(--line)}
+  .sheet h2{margin:0 0 14px;font-size:20px}
+  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+  .sheet input,.sheet textarea{width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px;font-size:16px;font-family:inherit}
+  .sheet textarea{min-height:90px;resize:vertical}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{flex:1 1 auto;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:14px;cursor:pointer;font-family:inherit}
+  .seg button.on{background:var(--accent2);border-color:var(--accent2);color:#0d1525;font-weight:700}
+  .row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .row .btn{flex:1}
+  .pick-card{background:linear-gradient(135deg,#2b2350,#1e2a4a);border-radius:18px;padding:22px;text-align:center}
+  .pick-card .emo{font-size:46px}
+  .pick-card h3{font-size:22px;margin:8px 0}
+  .pick-card p{color:#c9cde0;white-space:pre-wrap}
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#0c1a12;padding:10px 18px;border-radius:12px;font-weight:700;opacity:0;transition:.3s;z-index:20;pointer-events:none}
+  .toast.show{opacity:1}
+  .menu-btn{margin-right:auto;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:6px 10px;font-size:18px;cursor:pointer}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💡 מאגר הרעיונות שלי <button class="menu-btn" onclick="openBackup()">⚙️</button></h1>
+  <div class="stats">
+    <div class="stat"><b id="sIdea">0</b><span>רעיונות</span></div>
+    <div class="stat"><b id="sWork">0</b><span>בעבודה</span></div>
+    <div class="stat"><b id="sDone">0</b><span>הושלמו</span></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="tools">
+    <input id="q" placeholder="🔍 חיפוש..." oninput="render()">
+    <select id="fArea" onchange="render()"></select>
+  </div>
+</header>
+
+<main id="list"></main>
+
+<div class="fab">
+  <button class="btn alt" onclick="pickForMe()">🎲 תבחר לי</button>
+  <button class="btn main" onclick="openForm()">＋ רעיון חדש</button>
+</div>
+
+<!-- טופס הוספה/עריכה -->
+<div class="overlay" id="formOv" onclick="if(event.target===this)close_('formOv')">
+  <div class="sheet">
+    <h2 id="formTitle">רעיון חדש</h2>
+    <label>מה הרעיון? (כותרת קצרה)</label>
+    <input id="iTitle" placeholder="למשל: התראה כשנגמר מלאי בגולדה">
+    <label>פירוט — מה זה אמור לעשות?</label>
+    <textarea id="iDesc" placeholder="כתוב חופשי, גם אם זה לא מסודר..."></textarea>
+    <label>סוג</label>
+    <div class="seg" id="segType"></div>
+    <label>שייך ל...</label>
+    <div class="seg" id="segArea"></div>
+    <label>כמה זה חשוב?</label>
+    <div class="seg" id="segPrio"></div>
+    <label>כמה עבודה זה נראה?</label>
+    <div class="seg" id="segEffort"></div>
+    <label>סטטוס</label>
+    <div class="seg" id="segStatus"></div>
+    <div class="row">
+      <button class="btn main" onclick="saveIdea()">💾 שמור</button>
+      <button class="btn ghost" onclick="close_('formOv')">ביטול</button>
+    </div>
+    <div class="row" id="editExtras" style="display:none">
+      <button class="btn ghost" onclick="copyPrompt(editingId)">📋 העתק כבקשה ל-Claude</button>
+      <button class="btn danger" onclick="delIdea()">🗑 מחק</button>
+    </div>
+  </div>
+</div>
+
+<!-- תבחר לי -->
+<div class="overlay" id="pickOv" onclick="if(event.target===this)close_('pickOv')">
+  <div class="sheet">
+    <h2>🎲 על מה לעבוד עכשיו?</h2>
+    <label>כמה זמן יש לך?</label>
+    <div class="seg" id="segTime"></div>
+    <div id="pickResult" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- גיבוי -->
+<div class="overlay" id="backupOv" onclick="if(event.target===this)close_('backupOv')">
+  <div class="sheet">
+    <h2>⚙️ גיבוי ושחזור</h2>
+    <p class="hint">הרעיונות נשמרים בתוך הדפדפן בטלפון. אם תמחק את נתוני הדפדפן או תחליף טלפון — הם ילכו לאיבוד. לכן כדאי מדי פעם ללחוץ "ייצא גיבוי" ולשמור את הקובץ (למשל בוואטסאפ לעצמך או בדרייב).</p>
+    <div class="row">
+      <button class="btn main" onclick="exportData()">⬇️ ייצא גיבוי</button>
+      <button class="btn ghost" onclick="document.getElementById('imp').click()">⬆️ שחזר מגיבוי</button>
+    </div>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
+    <div class="row"><button class="btn ghost" onclick="close_('backupOv')">סגור</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'eyal_ideas_bank_v1';
+const TYPES   = [['app','📱 אפליקציה'],['auto','⚙️ אוטומציה'],['bot','🤖 בוט/התראה'],['other','✨ אחר']];
+const AREAS   = [['golda','🍦 גולדה'],['bullish','🥪 בוליש'],['personal','🙋 אישי'],['trading','📈 מסחר'],['content','🎬 תוכן'],['other','📂 אחר']];
+const PRIOS   = [['3','🔥 דחוף'],['2','⭐ חשוב'],['1','💭 נחמד שיהיה']];
+const EFFORTS = [['s','⚡ קטן (שעה)'],['m','🛠 בינוני (ערב)'],['l','🏗 גדול (כמה ימים)']];
+const STATUS  = [['idea','💡 רעיון'],['work','🔨 בעבודה'],['done','✅ הושלם']];
+const TIMES   = [['s','שעה'],['m','ערב שלם'],['l','סופ״ש'],['any','לא משנה']];
+
+let ideas = load();
+let tab = 'idea';
+let editingId = null;
+let form = {};
+
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } }
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(ideas)); }catch(e){ toast('⚠️ שגיאה בשמירה'); } }
+const label = (arr,v)=> (arr.find(x=>x[0]===v)||['',''])[1];
+const esc = s => String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function seg(id, arr, field){
+  const el = document.getElementById(id);
+  el.innerHTML = arr.map(([v,t])=>`<button class="${form[field]===v?'on':''}" onclick="form['${field}']='${v}';seg('${id}',${JSON.stringify(arr).replace(/"/g,"&quot;")},'${field}')">${t}</button>`).join('');
+}
+function drawSegs(){
+  seg('segType',TYPES,'type'); seg('segArea',AREAS,'area'); seg('segPrio',PRIOS,'prio');
+  seg('segEffort',EFFORTS,'effort'); seg('segStatus',STATUS,'status');
+}
+
+function renderTabs(){
+  const t = [['idea','💡 רעיונות'],['work','🔨 בעבודה'],['done','✅ הושלמו'],['all','הכל']];
+  document.getElementById('tabs').innerHTML = t.map(([v,n])=>`<div class="tab ${tab===v?'on':''}" onclick="tab='${v}';render()">${n}</div>`).join('');
+  const f = document.getElementById('fArea');
+  if(!f.options.length) f.innerHTML = '<option value="">כל התחומים</option>' + AREAS.map(([v,n])=>`<option value="${v}">${n}</option>`).join('');
+}
+
+function render(){
+  renderTabs();
+  document.getElementById('sIdea').textContent = ideas.filter(i=>i.status==='idea').length;
+  document.getElementById('sWork').textContent = ideas.filter(i=>i.status==='work').length;
+  document.getElementById('sDone').textContent = ideas.filter(i=>i.status==='done').length;
+  const q = document.getElementById('q').value.trim();
+  const area = document.getElementById('fArea').value;
+  let list = ideas.filter(i => (tab==='all'||i.status===tab) && (!area||i.area===area) &&
+    (!q || (i.title+' '+i.desc).includes(q)));
+  list.sort((a,b)=> (b.prio-a.prio) || (b.created-a.created));
+  const el = document.getElementById('list');
+  if(!list.length){
+    el.innerHTML = ideas.length
+      ? `<div class="empty"><div class="big">🔍</div>אין רעיונות בתצוגה הזו</div>`
+      : `<div class="empty"><div class="big">💡</div>המאגר ריק.<br>כל פעם שעולה לך רעיון — לחץ <b>"＋ רעיון חדש"</b> ותרשום אותו.<br>כשיהיה לך זמן — לחץ <b>"🎲 תבחר לי"</b>.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(i=>`
+    <div class="idea p${i.prio}" onclick="openForm('${i.id}')">
+      <h3>${esc(i.title)}</h3>
+      ${i.desc?`<p>${esc(i.desc)}</p>`:''}
+      <div class="chips">
+        <span class="chip st-${i.status}">${label(STATUS,i.status)}</span>
+        <span class="chip">${label(TYPES,i.type)}</span>
+        <span class="chip">${label(AREAS,i.area)}</span>
+        <span class="chip">${label(EFFORTS,i.effort)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openForm(id){
+  editingId = id || null;
+  const i = id ? ideas.find(x=>x.id===id) : null;
+  form = i ? {...i} : {type:'app',area:'golda',prio:'2',effort:'m',status:'idea'};
+  form.prio = String(form.prio);
+  document.getElementById('formTitle').textContent = i ? 'עריכת רעיון' : 'רעיון חדש';
+  document.getElementById('iTitle').value = i ? i.title : '';
+  document.getElementById('iDesc').value = i ? i.desc : '';
+  document.getElementById('editExtras').style.display = i ? 'flex' : 'none';
+  drawSegs();
+  document.getElementById('formOv').classList.add('show');
+  if(!i) setTimeout(()=>document.getElementById('iTitle').focus(),100);
+}
+function saveIdea(){
+  const title = document.getElementById('iTitle').value.trim();
+  if(!title){ toast('צריך לפחות כותרת 🙂'); return; }
+  const data = {...form, title, desc:document.getElementById('iDesc').value.trim(), prio:+form.prio};
+  if(editingId){ ideas = ideas.map(x=>x.id===editingId?{...x,...data}:x); }
+  else { ideas.push({...data, id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), created:Date.now()}); }
+  persist(); close_('formOv'); render(); toast(editingId?'עודכן ✓':'נשמר במאגר ✓');
+}
+function delIdea(){
+  if(!editingId) return;
+  const btn = event.target;
+  if(btn.dataset.sure!=='1'){ btn.dataset.sure='1'; btn.textContent='לחץ שוב למחיקה'; return; }
+  ideas = ideas.filter(x=>x.id!==editingId); persist(); close_('formOv'); render(); toast('נמחק');
+}
+function close_(id){ document.getElementById(id).classList.remove('show'); }
+
+/* ---- תבחר לי ---- */
+let timePick = 'any';
+function pickForMe(){
+  form.time = timePick; seg('segTime',TIMES,'time');
+  document.getElementById('segTime').onclick = ()=>setTimeout(()=>{timePick=form.time; doPick();},0);
+  document.getElementById('pickOv').classList.add('show'); doPick();
+}
+function doPick(){
+  const order = {s:1,m:2,l:3};
+  let pool = ideas.filter(i=>i.status!=='done');
+  if(timePick!=='any') pool = pool.filter(i=>order[i.effort]<=order[timePick]);
+  const r = document.getElementById('pickResult');
+  if(!pool.length){ r.innerHTML = `<div class="empty">אין רעיון פתוח שמתאים לזמן הזה.<br>נסה זמן אחר או הוסף רעיונות.</div>`; return; }
+  // רעיונות בעבודה קודמים, ואחר כך הגרלה משוקללת לפי חשיבות
+  const inWork = pool.filter(i=>i.status==='work');
+  let chosen;
+  if(inWork.length && Math.random()<0.5) chosen = inWork[Math.floor(Math.random()*inWork.length)];
+  else{
+    const w = pool.map(i=>i.prio*i.prio); let s = Math.random()*w.reduce((a,b)=>a+b,0);
+    chosen = pool[w.findIndex(x=>(s-=x)<0)] || pool[0];
+  }
+  r.innerHTML = `
+    <div class="pick-card">
+      <div class="emo">${label(TYPES,chosen.type).split(' ')[0]}</div>
+      <h3>${esc(chosen.title)}</h3>
+      ${chosen.desc?`<p>${esc(chosen.desc)}</p>`:''}
+      <div class="chips" style="justify-content:center;margin-top:10px">
+        <span class="chip">${label(AREAS,chosen.area)}</span><span class="chip">${label(PRIOS,String(chosen.prio))}</span><span class="chip">${label(EFFORTS,chosen.effort)}</span>
+        ${chosen.status==='work'?'<span class="chip st-work">כבר התחלת 💪</span>':''}
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn main" onclick="startWork('${chosen.id}')">🚀 מתחיל לעבוד</button>
+      <button class="btn ghost" onclick="doPick()">🔄 עוד אחד</button>
+    </div>`;
+}
+function startWork(id){
+  ideas = ideas.map(x=>x.id===id?{...x,status:'work'}:x); persist();
+  copyPrompt(id); close_('pickOv'); tab='work'; render();
+}
+
+/* ---- העתקה כבקשה ל-Claude ---- */
+function copyPrompt(id){
+  const i = ideas.find(x=>x.id===id); if(!i) return;
+  const txt = `אני רוצה לבנות ${label(TYPES,i.type).slice(2)} — "${i.title}"\nתחום: ${label(AREAS,i.area).slice(2)}\n\nמה זה אמור לעשות:\n${i.desc||'(עוד לא פירטתי)'}\n\nבוא נתחיל לעבוד על זה צעד אחר צעד.`;
+  navigator.clipboard?.writeText(txt).then(()=>toast('הועתק! הדבק בשיחה חדשה עם Claude 📋'),()=>toast('לא הצלחתי להעתיק'));
+}
+
+/* ---- גיבוי ---- */
+function openBackup(){ document.getElementById('backupOv').classList.add('show'); }
+function exportData(){
+  const blob = new Blob([JSON.stringify(ideas,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'ideas-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  toast('קובץ גיבוי ירד ✓');
+}
+function importData(e){
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{ try{
+      const arr = JSON.parse(rd.result); if(!Array.isArray(arr)) throw 0;
+      const ids = new Set(ideas.map(x=>x.id)); let n=0;
+      arr.forEach(x=>{ if(x.id && !ids.has(x.id)){ ideas.push(x); n++; } });
+      persist(); render(); close_('backupOv'); toast(`שוחזרו ${n} רעיונות ✓`);
+    }catch(_){ toast('הקובץ לא תקין'); } };
+  rd.readAsText(f); e.target.value='';
+}
+
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+
+render();
+</script>
+</body>
+</html>
